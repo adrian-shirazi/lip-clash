@@ -28,7 +28,7 @@ try {
 
 // QR code endpoint (PNG)
 app.get('/qr', async (req, res) => {
-  const host = req.get('host') || `localhost:${PORT}`;
+  const host = req.get('host');
   const joinUrl = `http://${host}/join.html`;
   try {
     const dataUrl = await QRCode.toDataURL(joinUrl);
