@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Quiplash — Submit</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <h1>Submit Answer</h1>
+    <div id="phase">Waiting in lobby...</div>
+
+    <div id="promptBox" style="display:none;">
+      <h3 id="promptTitle">Prompt</h3>
+      <p id="promptText"></p>
+      <textarea id="answer" rows="3"></textarea>
+      <button id="submitAnswer">Submit Answer</button>
+      <p id="submissionMsg"></p>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.emit('identify', { role: 'player' });
+    const playerId = localStorage.getItem('quiplashPlayerId');
+
+    socket.on('phase', ({ phase, prompt }) => {
+      document.getElementById('submissionMsg').textContent = '';
+      if (phase === 'submission') {
+        document.getElementById('phase').textContent = 'Submission';
+        document.getElementById('promptBox').style.display = 'block';
+        document.getElementById('promptText').textContent = prompt || '—';
+      } else {
+        document.getElementById('promptBox').style.display = 'none';
+        document.getElementById('phase').textContent = phase;
+      }
+
+      if (phase === 'voting') {
+        // redirect to voting page
+        window.location.href = '/vote.html';
+      }
+      if (phase === 'results') {
+        // also redirect to results (vote page handles results)
+        window.location.href = '/vote.html';
+      }
+    });
+
+    document.getElementById('submitAnswer').onclick = () => {
+      const text = document.getElementById('answer').value.trim();
+      if (!text) {
+        document.getElementById('submissionMsg').textContent = 'Please write something.';
+        return;
+      }
+      socket.emit('submitAnswer', { text });
+      document.getElementById('submissionMsg').textContent = 'Submitted!';
+    };
+  </script>
+</body>
+</html>
+

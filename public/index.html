@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Quiplash — Host</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <h1>Quiplash — Host</h1>
+
+    <div>
+      <p>Players (<span id="playerCount">0</span>/8):</p>
+      <ul id="players"></ul>
+    </div>
+
+    <div>
+      <h2>Current Prompt</h2>
+      <p id="promptText">—</p>
+    </div>
+
+    <div id="controls">
+      <button id="startSubmission">Start Submission</button>
+      <button id="startVoting">Start Voting</button>
+      <button id="nextRound">Next Round</button>
+    </div>
+
+    <div id="submissionsContainer">
+      <h3>Submissions</h3>
+      <div id="submissions"></div>
+    </div>
+
+    <div id="qr">
+      <h3>Join (scan)</h3>
+      <img id="qrimg" src="/qr" alt="qr" />
+      <p>Or open <code>/join.html</code> on your phone.</p>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/screen.js"></script>
+</body>
+</html>
+
