@@ -14,56 +14,28 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 // Static public files
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-function broadcastPlayers() {
-  io.emit("players_update", {
-    players: game.players,
-    hostId: game.hostSocketId || "",
+const players = new Map<string, Player>();
+
+app.get("/players", (_, res) => {
+  res.json({
+    count: players.size,
+    players: Array.from(players.values()),
   });
-}
+});
 
 // Socket.IO handlers
 io.on("connection", (socket) => {
-  console.log("New connection:", socket.id);
+  console.log("Player connected:", socket.id);
 
-  socket.on("join", (data: { playerId: string; name: string }) => {
-    let player = game.players.find((p) => p.id === data.playerId);
-
-    if (player) {
-      // reconnect
-      player.socketId = socket.id;
-    } else {
-      if (game.players.length >= game.maxPlayers) {
-        socket.emit("error", { message: "Lobby is full" });
-        return;
-      }
-
-      player = {
-        id: data.playerId,
-        socketId: socket.id,
-        name: data.name,
-        score: 0,
-      };
-
-      game.players.push(player);
-
-      // First player is the host
-      if (!game.hostSocketId) game.hostSocketId = socket.id;
-    }
-
-    broadcastPlayers();
+  players.set(socket.id, {
+    id: socket.id,
   });
 
+  console.log("Total players:", players.size);
+
   socket.on("disconnect", () => {
-    console.log("Disconnected:", socket.id);
-
-    game.players = game.players.filter((p) => p.socketId !== socket.id);
-
-    if (game.hostSocketId === socket.id) {
-      game.hostSocketId =
-        game.players.length > 0 ? game.players[0].socketId : null;
-    }
-
-    broadcastPlayers();
+    console.log("Player disconnected:", socket.id);
+    players.delete(socket.id);
   });
 });
 
