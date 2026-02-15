@@ -1,6 +1,7 @@
 // src/gameState.ts
 export type Player = {
   id: string;
+  name: string;
 };
 
 export type Submission = { id: string; playerId: string; text: string };

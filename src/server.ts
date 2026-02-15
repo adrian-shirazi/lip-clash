@@ -1,13 +1,13 @@
-// src/server.ts
 import express from "express";
 import http from "http";
-import { Server as SocketIOServer } from "socket.io";
+import { Server } from "socket.io";
 import path from "path";
-import { game, Player } from "./gameState";
+import { randomUUID } from "crypto";
+import { Player, ServerToClientEvents, ClientToServerEvents } from "./types";
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer(server);
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -16,26 +16,35 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 const players = new Map<string, Player>();
 
-app.get("/players", (_, res) => {
-  res.json({
-    count: players.size,
-    players: Array.from(players.values()),
-  });
-});
+function broadcastPlayers() {
+  io.emit("playersUpdated", Array.from(players.values()));
+}
 
-// Socket.IO handlers
 io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
 
-  players.set(socket.id, {
-    id: socket.id,
+  socket.on("joinLobby", ({ name, sessionId }) => {
+    const id = sessionId ?? randomUUID();
+
+    players.set(id, {
+      sessionId: id,
+      name,
+    });
+
+    socket.data.sessionId = id;
+    broadcastPlayers();
   });
 
-  console.log("Total players:", players.size);
+  socket.on("startGame", () => {
+    io.emit("gameStarted");
+  });
 
   socket.on("disconnect", () => {
-    console.log("Player disconnected:", socket.id);
-    players.delete(socket.id);
+    const id = socket.data.sessionId;
+    if (!id) return;
+
+    players.delete(id);
+    broadcastPlayers();
   });
 });
 

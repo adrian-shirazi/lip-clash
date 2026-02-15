@@ -1,17 +1,12 @@
 (function () {
-  const socket = io();
+  const socket = io("http://localhost:3000");
 
-  document.getElementById("joinBtn").onclick = () => {
-    const playerId = crypto.randomUUID();
-    const name =
-      document.getElementById("name").value.trim() || "Mystery player";
-    socket.emit("join", { playerId, name });
-    localStorage.setItem("playerId", playerId);
-    localStorage.setItem("name", name);
-    window.location.href = "/lobby.html";
-  };
+  socket.on("connect", () => {
+    const name = prompt("Enter your name");
+    socket.emit("setName", name);
+  });
 
-  socket.on("error", ({ message }) => {
-    document.getElementById("joinMsg").textContent = message;
+  socket.on("playersUpdated", (players) => {
+    console.log("Players:", players);
   });
 })();

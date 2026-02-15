@@ -1,28 +1,34 @@
 (function () {
-  const playerId = localStorage.getItem("playerId");
-  const name = localStorage.getItem("name");
-
-  if (!playerId || !name) {
-    window.location.href = "/join.html";
-  }
-
   const socket = io();
 
-  socket.emit("join", { playerId, name });
+  const name = localStorage.getItem("name");
+  let sessionId = localStorage.getItem("sessionId");
 
-  socket.on("players_update", (msg) => {
-    const playersList = document.getElementById("players");
-    playersList.innerHTML = "";
+  socket.on("connect", () => {
+    socket.emit("joinLobby", { name, sessionId });
+  });
 
-    msg.players.forEach((player) => {
+  socket.on("playersUpdated", (players) => {
+    const list = document.getElementById("playerList");
+    list.innerHTML = "";
+
+    players.forEach((p) => {
       const li = document.createElement("li");
-      li.textContent = player.name;
-      if (player.socketId === msg.hostId) li.classList.add("host");
-      playersList.appendChild(li);
+      li.textContent = p.name;
+      list.appendChild(li);
     });
   });
 
-  socket.on("error", (msg) => {
-    alert(msg.message);
+  socket.on("gameStarted", () => {
+    alert("Game started!");
+  });
+
+  document.getElementById("startBtn").onclick = () => {
+    socket.emit("startGame");
+  };
+
+  socket.on("connect", () => {
+    sessionId = socket.id;
+    localStorage.setItem("sessionId", sessionId);
   });
 })();
