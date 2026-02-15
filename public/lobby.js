@@ -1,6 +1,6 @@
 (function () {
   const playerId = localStorage.getItem("playerId");
-  const name = localStorage.getItem("playerName");
+  const name = localStorage.getItem("name");
 
   if (!playerId || !name) {
     window.location.href = "/join.html";

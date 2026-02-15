@@ -1,36 +1,22 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8" />
-  <title>Quiplash — Join</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="/style.css" />
+    <meta charset="utf-8" />
+    <title>Join</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
-  <div id="app">
     <h1>Join Game</h1>
     <div id="joinForm">
-      <label>Display name: <input id="name" placeholder="Your name" /></label>
-      <button id="joinBtn">Join</button>
-      <p id="joinMsg"></p>
+        <label>Display name: <input id="name" placeholder="Your name" /></label>
+        <button id="joinBtn">Join</button>
+        <p id="joinMsg"></p>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      const socket = io();
-      document.getElementById('joinBtn').onclick = () => {
-        const name = document.getElementById('name').value.trim() || 'Player';
-        socket.emit('joinGame', { name });
-      };
-      socket.on('joined', ({ playerId }) => {
-        // store playerId locally and redirect to submit page
-        localStorage.setItem('quiplashPlayerId', playerId);
-        window.location.href = '/submit.html';
-      });
-      socket.on('joinError', ({ message }) => {
-        document.getElementById('joinMsg').textContent = message;
-      });
-    </script>
-  </div>
+    <script src="/join.js"></script>
 </body>
-</html>
 
+</html>
