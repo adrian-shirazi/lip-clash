@@ -1,12 +1,9 @@
 (function () {
-  const socket = io("http://localhost:3000");
+  const socket = io();
 
-  socket.on("connect", () => {
-    const name = prompt("Enter your name");
-    socket.emit("setName", name);
-  });
-
-  socket.on("playersUpdated", (players) => {
-    console.log("Players:", players);
-  });
+  document.getElementById("joinBtn").onclick = () => {
+    const name = document.getElementById("name").value.trim();
+    socket.emit("joinLobby", name);
+    window.location.href = "/lobby.html";
+  };
 })();
