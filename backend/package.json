@@ -1,0 +1,15 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "lip-clash backend server",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "run test"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
